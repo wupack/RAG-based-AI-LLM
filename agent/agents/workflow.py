@@ -1,0 +1,29 @@
+from langgraph.graph import StateGraph
+from typing import TypedDict, Annotated, List
+from langchain_core.messages import HumanMessage, AIMessage
+from langgraph.constants import END
+
+class AgentState(TypedDict):
+    messages: Annotated[List, lambda x, y: x + y]
+    retrieved_docs: List[str]
+
+def create_workflow(retriever, llm):
+    def retrieve(state: AgentState):
+        docs = retriever.invoke(state["messages"][-1].content)
+        return {"retrieved_docs": [doc.page_content for doc in docs]}
+    
+    def generate(state: AgentState):
+        prompt = f"""基于以下信息回答问题：
+        {state['retrieved_docs']}
+        
+        问题：{state['messages'][-1].content}"""
+        response = llm.generate(prompt)
+        return {"messages": [AIMessage(content=response)]}
+    
+    workflow = StateGraph(AgentState)
+    workflow.add_node("retrieve", retrieve)
+    workflow.add_node("generate", generate)
+    workflow.set_entry_point("retrieve")
+    workflow.add_edge("retrieve", "generate")
+    workflow.add_edge("generate", END)
+    return workflow.compile()
