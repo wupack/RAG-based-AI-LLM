@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
-    const originalBtnText = sendBtn.textContent; // 保存按钮原始文字
+    const originalBtnText = sendBtn.textContent;
     
     function addMessage(text, isUser) {
         const msgDiv = document.createElement('div');
@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = userInput.value.trim();
         if (!message) return;
 
-        // 修改按钮文字并禁用
         sendBtn.textContent = '提问中';
         sendBtn.disabled = true;
 
@@ -61,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage(`错误: ${error.message}`, false);
             console.error(error);
         } finally {
-            // 恢复按钮原始状态
             sendBtn.textContent = originalBtnText;
             sendBtn.disabled = false;
         }
