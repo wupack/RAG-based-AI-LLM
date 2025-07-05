@@ -2,11 +2,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
+    const originalBtnText = sendBtn.textContent; // 保存按钮原始文字
     
     function addMessage(text, isUser) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
         msgDiv.textContent = text;
+
+        if (!isUser) {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = '复制';
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalCopyBtnText = copyBtn.textContent;
+                    copyBtn.textContent = '已复制';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalCopyBtnText;
+                    }, 1000);
+                }).catch(err => {
+                    console.error('复制失败: ', err);
+                });
+            });
+            msgDiv.appendChild(copyBtn);
+        }
+
         messagesContainer.appendChild(msgDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -14,7 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function sendMessage() {
         const message = userInput.value.trim();
         if (!message) return;
-        
+
+        // 修改按钮文字并禁用
+        sendBtn.textContent = '提问中';
+        sendBtn.disabled = true;
+
         addMessage(message, true);
         userInput.value = '';
         
@@ -36,6 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             addMessage(`错误: ${error.message}`, false);
             console.error(error);
+        } finally {
+            // 恢复按钮原始状态
+            sendBtn.textContent = originalBtnText;
+            sendBtn.disabled = false;
         }
     }
     
