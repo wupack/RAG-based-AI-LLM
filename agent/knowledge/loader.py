@@ -19,7 +19,7 @@ def load_documents():
             str(Config.DATA_DIR),
             glob=f"**/*{ext}",
             loader_cls=loader_cls,
-            #loader_kwargs={'autodetect_encoding': True}
+            # loader_kwargs={'autodetect_encoding': True}
         )
         documents.extend(loader.load())
     return documents

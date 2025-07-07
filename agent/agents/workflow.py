@@ -13,7 +13,7 @@ def create_workflow(retriever, llm):
         return {"retrieved_docs": [doc.page_content for doc in docs]}
     
     def generate(state: AgentState):
-        prompt = f"""基于以下信息回答问题：
+        prompt = f"""请基于以下信息回答问题，如果信息与问题无关，请忽略这些信息，仅根据自己的知识回答问题：
         {state['retrieved_docs']}
         
         问题：{state['messages'][-1].content}"""
