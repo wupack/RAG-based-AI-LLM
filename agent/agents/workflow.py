@@ -16,7 +16,7 @@ def create_workflow(retriever, llm):
         prompt = f"""请基于以下信息回答问题，如果信息与问题无关，请忽略这些信息，仅根据自己的知识回答问题：
         {state['retrieved_docs']}
         
-        问题：{state['messages'][-1].content}"""
+        问题：{state['messages'][-1].content}（小标题绝对不要用Markdown格式，Markdown格式的小标题会用**去包围）"""
         response = llm.generate(prompt)
         return {"messages": [AIMessage(content=response)]}
     
