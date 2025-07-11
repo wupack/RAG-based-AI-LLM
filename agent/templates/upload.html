@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文档上传</title>
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>生成知识库</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" multiple accept=".txt,.pdf,.docx">
+            <button type="submit">生成向量数据库</button>
+        </form>
+        <div id="status"></div>
+    </div>
+    <script src="/static/js/upload.js"></script>
+</body>
+</html>

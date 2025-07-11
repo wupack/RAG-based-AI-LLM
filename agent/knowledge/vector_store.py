@@ -4,8 +4,8 @@ from models.qwen2_api import DashScopeEmbeddings
 from knowledge.loader import load_documents
 from config import Config
 
-def create_vector_store():
-    documents = load_documents()
+def create_vector_store(documents,db_dir):
+    
     
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=Config.CHUNK_SIZE,
@@ -19,6 +19,7 @@ def create_vector_store():
     vectorstore = Chroma.from_documents(
         documents=splits,
         embedding=embeddings,
-        persist_directory=str(Config.DB_DIR)
+        persist_directory=str(db_dir)
     )
+    print("step:4")
     return vectorstore

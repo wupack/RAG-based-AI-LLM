@@ -6,7 +6,7 @@ from langchain_community.document_loaders  import (
 )
 from config import Config
 
-def load_documents():
+def load_documents(data_dir):
     loaders = {
         '.txt': TextLoader,
         '.pdf': PDFMinerLoader,
@@ -16,7 +16,7 @@ def load_documents():
     documents = []
     for ext, loader_cls in loaders.items():
         loader = DirectoryLoader(
-            str(Config.DATA_DIR),
+            str(data_dir),
             glob=f"**/*{ext}",
             loader_cls=loader_cls,
             # loader_kwargs={'autodetect_encoding': True}
