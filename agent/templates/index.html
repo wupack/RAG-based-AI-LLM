@@ -1,18 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>RAG客服系统</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG智能客服系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
 </head>
 <body>
-    <a href="/upload" class="nav-link">管理知识库</a>
-    <div class="chat-container">
-        <div id="messages"></div>
-        <div class="input-area">
-            <textarea id="user-input" type="text" placeholder="输入问题..."></textarea> 
-            <button id="send-btn">发送</button>
+    <div class="app-container">
+        <!-- 左侧菜单栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="mdi mdi-robot-happy"></i>
+                <h1>智能客服</h1>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-item">
+                        <i class="mdi mdi-database"></i>
+                        <span>知识库选择</span>
+                    </div>
+                    <div class="db-selector">
+                        <select id="vector-db-select" class="db-dropdown">
+                            {% for db in vector_dbs %}
+                            <option value="{{ db.name }}" {% if db.name == current_db %}selected{% endif %}>{{ db.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="current-db-display">
+                            <i class="mdi mdi-database"></i>
+                            <span id="current-db-name">{{ current_db }}</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="/upload" class="menu-item">
+                    <i class="mdi mdi-database-plus"></i>
+                    <span>上传知识库</span>
+                </a>
+                <div class="menu-divider"></div>
+                <a href="/" class="menu-item active">
+                    <i class="mdi mdi-forum"></i>
+                    <span>对话界面</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 聊天区域 -->
+            <div class="chat-container">
+                <div id="messages"></div>
+                <div class="input-area">
+                    <textarea id="user-input" placeholder="输入您的问题..."></textarea>
+                    <button id="send-btn">
+                        <i class="mdi mdi-send"></i>
+                        <span>发送</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+
     <script src="/static/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dbSelect = document.getElementById('vector-db-select');
+            
+            dbSelect.addEventListener('change', async function() {
+                const dbName = this.value;
+                try {
+                    const response = await fetch('/api/switch_vector_db', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `db_name=${encodeURIComponent(dbName)}`
+                    });
+                    
+                    if (response.ok) {
+                        document.getElementById('current-db-name').textContent = dbName;
+                        // 可以在这里添加通知或反馈，告诉用户切换成功
+                        showNotification('知识库切换成功: ' + dbName);
+                    } else {
+                        throw new Error('切换知识库失败');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('切换知识库时出错: ' + error.message, 'error');
+                    // 恢复之前的选择
+                    this.value = document.getElementById('current-db-name').textContent;
+                }
+            });
+            
+            function showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.add('fade-out');
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 </html>
